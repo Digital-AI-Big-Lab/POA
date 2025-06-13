@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>輿情分析報告申請單</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'pink-custom': '#f47a7a',
+            'pink-light': '#ffd0d0',
+            'pink-dark': '#e45a5a',
+            'gray-text': '#4a4a4a'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-white text-gray-text">
+  <div class="max-w-md mx-auto p-4 min-h-screen flex flex-col">
+    <!-- Header -->
+    <div class="flex items-center justify-center mt-6 mb-8">
+      <div class="flex items-center">
+        <svg class="w-8 h-8 mr-2" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 5C11.716 5 5 11.716 5 20C5 28.284 11.716 35 20 35" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+          <path d="M20 5C28.284 5 35 11.716 35 20C35 28.284 28.284 35 20 35" stroke="#f47a7a" stroke-width="6" stroke-linecap="round"/>
+          <rect x="18" y="2" width="4" height="4" fill="#333"/>
+        </svg>
+        <h1 class="text-lg font-medium">輿情分析報告申請單</h1>
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <div id="formSection" class="flex-grow">
+      <div class="mb-4">
+        <label class="block text-sm mb-1">姓名</label>
+        <input type="text" id="name" placeholder="輸入您的姓名" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none" />
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm mb-1">關鍵字</label>
+        <input type="text" id="keywords" placeholder="輸入搜尋的關鍵字" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none" />
+        <p class="text-xs mt-1 text-gray-500">最多可以一次搜尋一個，並以半形","分隔每個關鍵字</p>
+      </div>
+
+      <div class="mb-4 relative">
+        <label class="block text-sm mb-1">搜尋區間</label>
+        <div class="relative" id="searchPeriodDropdown">
+          <button id="searchPeriodBtn" type="button" class="w-full p-3 border border-gray-300 rounded-lg bg-white text-left flex justify-between items-center focus:outline-none">
+            <span id="searchPeriodText">選擇搜尋區間</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <div id="searchPeriodOptions" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg hidden">
+            <ul id="predefinedOptions">
+              <li class="p-3 hover:bg-pink-light cursor-pointer">今天</li>
+              <li class="p-3 hover:bg-pink-light cursor-pointer border-t border-gray-200">最近一週</li>
+              <li class="p-3 hover:bg-pink-light cursor-pointer border-t border-gray-200">最近一個月</li>
+              <li class="p-3 hover:bg-pink-light cursor-pointer border-t border-gray-200">最近三個月</li>
+              <li id="showAdvanced" class="p-3 hover:bg-pink-light cursor-pointer border-t border-gray-200 text-center text-sm text-gray-500">➕ 進階選項</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date Picker Modal -->
+      <div id="datePickerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20 hidden">
+        <div class="bg-white rounded-lg w-11/12 max-w-md">
+          <div class="p-4">
+            <div class="text-center font-medium mb-4">選擇日期範圍</div>
+            <input id="searchPeriod" type="text" placeholder="選擇日期範圍" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none" />
+          </div>
+          <div class="flex p-3 border-t">
+            <button id="resetDateBtn" class="flex-1 py-2 border border-pink-custom text-pink-custom rounded-md mr-2">重新設定</button>
+            <button id="confirmDateBtn" class="flex-1 py-2 bg-pink-custom text-white rounded-md">確定</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm mb-1">電子信箱</label>
+        <input type="email" id="email" placeholder="輸入您的信箱，報告將寄至此信箱" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none" />
+        <p class="text-xs mt-1 text-gray-500">請輸入您的公司信箱</p>
+      </div>
+
+      <div class="mt-auto pt-8 flex">
+        <button id="clearBtn" class="flex-1 py-3 border border-pink-custom text-pink-custom rounded-md mr-2">全部清空</button>
+        <button id="submitBtn" class="flex-1 py-3 bg-pink-custom text-white rounded-md">提交申請</button>
+      </div>
+    </div>
+
+    <!-- Success Section -->
+    <div id="successSection" class="hidden flex-grow flex flex-col items-center justify-center text-center">
+        <svg class="w-16 h-16 text-pink-custom mb-6" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M21.7 2.3a1 1 0 0 1 0 1.4L12.8 12.6a1 1 0 0 1-1.4 0L2.3 3.7a1 1 0 0 1 0-1.4 1 1 0 0 1 1.4 0L12 10.6 20.3 2.3a1 1 0 0 1 1.4 0z"/>
+        <path d="M21 5.4L12 14.4 3 5.4V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5.4z"/>
+        </svg>
+        <h2 class="text-2xl font-medium mb-6">申請單已送出</h2>
+        <p class="mb-1">目前尚有 <span class="text-pink-custom text-xl font-medium count-placeholder">--</span> 筆報告正在處理中</p>
+        <p class="mb-6">預計工作時間需要 <span class="text-pink-custom text-xl font-medium count-time">--</span> 個小時</p>
+        <p class="mb-6">感謝您的耐心等候！</p>
+        <p class="text-sm text-pink-custom mb-2">除scsb網域信箱，其餘(如Gmail)我們採白名單機制</p>
+        <p class="text-sm text-pink-custom mb-16">申請白名單請洽 #51189 潘副理</p>
+        <div class="mt-auto w-full flex">
+        <button id="feedbackBtn" class="flex-1 py-3 border border-pink-custom text-pink-custom rounded-md mr-2">提供建議</button>
+        <button id="reapplyBtn" class="flex-1 py-3 bg-pink-custom text-white rounded-md">再次申請</button>
+        </div>
+    </div>
+  
+  <script>
+    flatpickr("#searchPeriod", {
+      mode: "range",
+      dateFormat: "Y-m-d",
+      onClose: function (selectedDates) {
+        if (selectedDates.length === 2) {
+          const startDate = selectedDates[0].toLocaleDateString();
+          const endDate = selectedDates[1].toLocaleDateString();
+          document.getElementById("searchPeriodText").textContent = `${startDate} - ${endDate}`;
+        }
+        document.getElementById("searchPeriodOptions").classList.add("hidden");
+      }
+    });
+    async function fetchRequestCount() {
+        try {
+          const res = await fetch("https://flask-app-588775665030.asia-east1.run.app/request-count");
+          const data = await res.json();
+          console.log("目前總申請數：", data.count);
+          document.querySelector("#successSection .count-placeholder").textContent = data.count;
+          document.querySelector("#successSection .count-time").textContent = 0.5*data.count;
+        } catch (err) {
+          console.error("無法取得申請總數", err);
+        }
+      }
+      
+    const searchPeriodOptions = document.getElementById("searchPeriodOptions");
+    const searchPeriodBtn = document.getElementById("searchPeriodBtn");
+    const searchPeriodText = document.getElementById("searchPeriodText");
+    const datePickerModal = document.getElementById("datePickerModal");
+
+    const formatDate = (d) => d.toISOString().split("T")[0];
+
+    searchPeriodBtn.addEventListener("click", () => {
+      searchPeriodOptions.classList.toggle("hidden");
+    });
+
+    document.querySelectorAll("#predefinedOptions li").forEach((li, index) => {
+      li.addEventListener("click", () => {
+        let start, end;
+        const now = new Date();
+        if (index === 4) {
+          datePickerModal.classList.remove("hidden");
+          return;
+        }
+
+        switch (index) {
+          case 0:
+            start = end = now;
+            break;
+          case 1:
+            start = new Date(now); start.setDate(start.getDate() - 7);
+            end = now;
+            break;
+          case 2:
+            start = new Date(now); start.setMonth(start.getMonth() - 1);
+            end = now;
+            break;
+          case 3:
+            start = new Date(now); start.setMonth(start.getMonth() - 3);
+            end = now;
+            break;
+        }
+
+        searchPeriodText.textContent = `${formatDate(start)} - ${formatDate(end)}`;
+        searchPeriodOptions.classList.add("hidden");
+      });
+    });
+
+    document.getElementById("resetDateBtn").addEventListener("click", () => {
+      searchPeriodText.textContent = "選擇搜尋區間";
+      datePickerModal.classList.add("hidden");
+    });
+
+    document.getElementById("confirmDateBtn").addEventListener("click", () => {
+      datePickerModal.classList.add("hidden");
+    });
+    
+    document.getElementById("submitBtn").addEventListener("click", async () => {
+        const name = document.getElementById("name").value.trim();
+        const keywordsInput = document.getElementById("keywords").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const searchPeriodRaw = document.getElementById("searchPeriodText").textContent.trim();
+      
+        if (!name || !keywordsInput || !email || searchPeriodRaw === "選擇搜尋區間") {
+          alert("請填寫所有必填欄位");
+          return;
+        }
+      
+        const keywords = keywordsInput.split(",").map(k => k.trim()).filter(k => k);
+        const [start_date, end_date] = searchPeriodRaw.split(" - ").map(d => {
+          const [y, m, d_] = d.includes("/") ? d.split("/") : d.split("-");
+          return `${y.padStart(4, "0")}-${m.padStart(2, "0")}-${d_.padStart(2, "0")}`;
+        });
+      
+        const payload = {
+          name,
+          keywords: keywords.join(","),
+          email,
+          start_date,
+          end_date
+        };
+      
+        try {
+          const response = await fetch("https://flask-app-588775665030.asia-east1.run.app/submit-request", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+          });
+      
+          if (!response.ok) {
+            throw new Error("提交失敗，請稍後再試");
+          }
+
+          await fetchRequestCount();
+
+          document.getElementById("formSection").classList.add("hidden");
+          document.getElementById("successSection").classList.remove("hidden");
+      
+        } catch (err) {
+          alert(err.message || "發生錯誤，請稍後再試");
+        }
+      });
+                  
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      document.getElementById("name").value = "";
+      document.getElementById("keywords").value = "";
+      document.getElementById("email").value = "";
+      searchPeriodText.textContent = "選擇搜尋區間";
+    });
+
+    document.getElementById("reapplyBtn").addEventListener("click", () => {
+      document.getElementById("successSection").classList.add("hidden");
+      document.getElementById("formSection").classList.remove("hidden");
+    });
+  </script>
+</body>
+</html>
